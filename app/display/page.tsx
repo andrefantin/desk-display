@@ -150,7 +150,7 @@ export default function DisplayPage() {
             width: "55%",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "flex-end",
+            justifyContent: "space-between",
             padding: "32px 24px 48px 48px",
           }}
         >
@@ -158,15 +158,13 @@ export default function DisplayPage() {
             accentColor={settings.accentColor}
             fontScale={settings.fontScale}
           />
-          <div style={{ marginTop: "16px" }}>
-            <DateWeatherDisplay
-              accentColor={settings.accentColor}
-              fontScale={settings.fontScale}
-              temperature={weather?.temperature ?? null}
-              unit={settings.temperatureUnit}
-              weatherCode={weather?.weatherCode ?? null}
-            />
-          </div>
+          <DateWeatherDisplay
+            accentColor={settings.accentColor}
+            fontScale={settings.fontScale}
+            temperature={weather?.temperature ?? null}
+            unit={settings.temperatureUnit}
+            weatherCode={weather?.weatherCode ?? null}
+          />
         </div>
 
         {/* Right panel ~45% */}

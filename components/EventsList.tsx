@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { IconCalendar } from "@tabler/icons-react";
 import type { CalendarEvent } from "@/lib/types";
 
 interface EventsListProps {
@@ -23,25 +25,11 @@ function formatTime(isoString: string): string {
   }
 }
 
-function CalendarIcon({ color }: { color: string }) {
-  return (
-    <svg
-      width="28"
-      height="28"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ marginBottom: "16px" }}
-    >
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-      <line x1="16" y1="2" x2="16" y2="6" />
-      <line x1="8" y1="2" x2="8" y2="6" />
-      <line x1="3" y1="10" x2="21" y2="10" />
-    </svg>
-  );
+function isOngoing(startTime: string, endTime: string, now: Date): boolean {
+  if (!startTime || !endTime) return false;
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+  return now >= start && now <= end;
 }
 
 export default function EventsList({
@@ -49,8 +37,15 @@ export default function EventsList({
   accentColor,
   fontScale,
 }: EventsListProps) {
+  const [now, setNow] = useState<Date>(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const timeFontSize = Math.round(20 * fontScale);
-  const titleFontSize = Math.round(32 * fontScale);
+  const titleFontSize = Math.round(28 * fontScale);
 
   return (
     <div
@@ -62,61 +57,76 @@ export default function EventsList({
         paddingTop: "8px",
       }}
     >
-      <CalendarIcon color={accentColor} />
+      <IconCalendar
+        size={28}
+        color={accentColor}
+        strokeWidth={1.5}
+        style={{ marginBottom: "16px" }}
+      />
 
       {events.length === 0 ? (
         <div
           style={{
             color: "white",
-            textAlign: "center",
             fontSize: `${timeFontSize}px`,
-            marginTop: "auto",
-            marginBottom: "auto",
-            opacity: 0.6,
+            marginTop: "8px",
+            lineHeight: 1.5,
+            opacity: 0.8,
           }}
         >
-          No upcoming events
+          You&apos;re all clear —<br />
+          no meetings left today!
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-          {events.slice(0, 3).map((event, index) => (
-            <div key={event.id}>
-              {index > 0 && (
+          {events.slice(0, 3).map((event, index) => {
+            const ongoing = isOngoing(event.startTime, event.endTime, now);
+            return (
+              <div key={event.id}>
+                {index > 0 && (
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: accentColor,
+                      opacity: 0.3,
+                      marginTop: "12px",
+                      marginBottom: "12px",
+                    }}
+                  />
+                )}
                 <div
                   style={{
-                    height: "1px",
-                    backgroundColor: accentColor,
-                    opacity: 0.4,
-                    marginTop: "14px",
-                    marginBottom: "14px",
-                  }}
-                />
-              )}
-              <div>
-                <div
-                  style={{
-                    fontSize: `${timeFontSize}px`,
-                    color: "white",
-                    opacity: 0.7,
-                    fontWeight: 400,
-                    marginBottom: "4px",
-                  }}
-                >
-                  {formatTime(event.startTime)}
-                </div>
-                <div
-                  style={{
-                    fontSize: `${titleFontSize}px`,
-                    color: "white",
-                    fontWeight: 700,
-                    lineHeight: 1.2,
+                    padding: ongoing ? "8px 10px" : "0",
+                    borderRadius: ongoing ? "6px" : "0",
+                    backgroundColor: ongoing ? `${accentColor}22` : "transparent",
+                    borderLeft: ongoing ? `3px solid ${accentColor}` : "none",
                   }}
                 >
-                  {event.title}
+                  <div
+                    style={{
+                      fontSize: `${timeFontSize}px`,
+                      color: ongoing ? accentColor : "white",
+                      opacity: ongoing ? 1 : 0.7,
+                      fontWeight: ongoing ? 600 : 400,
+                      marginBottom: "2px",
+                    }}
+                  >
+                    {ongoing ? "NOW  " : ""}{formatTime(event.startTime)}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: `${titleFontSize}px`,
+                      color: "white",
+                      fontWeight: 700,
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {event.title}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

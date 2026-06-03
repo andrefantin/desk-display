@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import {
-  IconSunFilled,
-  IconSunHighFilled,
-  IconCloudFilled,
-  IconDropletFilled,
-  IconDropletsFilled,
-  IconBoltFilled,
+  IconSun,
+  IconSunHigh,
+  IconCloud,
+  IconDroplet,
+  IconDroplets,
+  IconBolt,
   IconSnowflake,
 } from "@tabler/icons-react";
 
@@ -23,21 +23,18 @@ const DAY_ABBRS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 function getWeatherIcon(code: number | null, size: number, color: string) {
   if (code === null) return null;
-
-  const props = { size, color };
-
-  if (code === 0) return <IconSunFilled {...props} />;
-  if (code === 1) return <IconSunHighFilled {...props} />;
-  if (code === 2 || code === 3) return <IconCloudFilled {...props} />;
-  if (code === 45 || code === 48) return <IconCloudFilled {...props} />;
-  if (code >= 51 && code <= 55) return <IconDropletFilled {...props} />;
-  if (code >= 61 && code <= 65) return <IconDropletsFilled {...props} />;
+  const props = { size, color, strokeWidth: 1.5 };
+  if (code === 0) return <IconSun {...props} />;
+  if (code === 1) return <IconSunHigh {...props} />;
+  if (code === 2 || code === 3) return <IconCloud {...props} />;
+  if (code === 45 || code === 48) return <IconCloud {...props} />;
+  if (code >= 51 && code <= 55) return <IconDroplet {...props} />;
+  if (code >= 61 && code <= 65) return <IconDroplets {...props} />;
   if (code >= 71 && code <= 77) return <IconSnowflake {...props} />;
-  if (code >= 80 && code <= 82) return <IconDropletsFilled {...props} />;
+  if (code >= 80 && code <= 82) return <IconDroplets {...props} />;
   if (code >= 85 && code <= 86) return <IconSnowflake {...props} />;
-  if (code >= 95) return <IconBoltFilled {...props} />;
-
-  return <IconCloudFilled {...props} />;
+  if (code >= 95) return <IconBolt {...props} />;
+  return <IconCloud {...props} />;
 }
 
 export default function DateWeatherDisplay({
@@ -56,7 +53,6 @@ export default function DateWeatherDisplay({
       setDayAbbr(DAY_ABBRS[now.getDay()]);
       setDateNum(now.getDate());
     };
-
     update();
     const interval = setInterval(update, 60000);
     return () => clearInterval(interval);
@@ -71,12 +67,7 @@ export default function DateWeatherDisplay({
   const iconSize = Math.round(40 * fontScale);
 
   return (
-    <div
-      style={{
-        fontFamily: "'Barlow', sans-serif",
-        fontWeight: 700,
-      }}
-    >
+    <div style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700 }}>
       <div style={{ fontSize: `${baseFontSize}px`, marginBottom: "4px" }}>
         <span style={{ color: accentColor }}>{dayAbbr}</span>
         <span style={{ color: "white" }}> {dateNum}</span>
@@ -91,19 +82,7 @@ export default function DateWeatherDisplay({
         }}
       >
         {getWeatherIcon(weatherCode, iconSize, accentColor)}
-        <span>
-          {tempDisplay}
-          <span
-            style={{
-              fontSize: `${Math.round(24 * fontScale)}px`,
-              marginLeft: "4px",
-              fontWeight: 400,
-              color: "rgba(255,255,255,0.6)",
-            }}
-          >
-            °{unit}
-          </span>
-        </span>
+        <span>{tempDisplay}</span>
       </div>
     </div>
   );
