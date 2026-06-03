@@ -31,7 +31,7 @@ export default function ClockDisplay({
     <div
       style={{
         fontFamily: "'Oswald', sans-serif",
-        fontSize: `calc(340px * ${fontScale})`,
+        fontSize: `calc(200px * ${fontScale})`,
         color: accentColor,
         fontWeight: 700,
         lineHeight: 1,

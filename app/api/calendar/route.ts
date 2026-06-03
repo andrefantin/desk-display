@@ -1,10 +1,11 @@
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getSettings } from "@/lib/settings";
 import { getUpcomingEvents } from "@/lib/google-calendar";
 
 export async function GET() {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
 
     if (!session || !session.accessToken) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
