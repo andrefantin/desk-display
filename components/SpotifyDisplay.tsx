@@ -1,6 +1,6 @@
 "use client";
 
-import { IconMusic } from "@tabler/icons-react";
+import { IconMusic, IconPlayerPauseFilled } from "@tabler/icons-react";
 import type { SpotifyTrack } from "@/lib/types";
 
 interface SpotifyDisplayProps {
@@ -21,7 +21,7 @@ export default function SpotifyDisplay({
   accentColor,
   fontScale,
 }: SpotifyDisplayProps) {
-  if (!track || !track.isPlaying) return null;
+  if (!track) return null;
 
   const progress =
     track.durationMs > 0 ? (track.progressMs / track.durationMs) * 100 : 0;
@@ -62,11 +62,18 @@ export default function SpotifyDisplay({
               marginBottom: "2px",
             }}
           >
-            <IconMusic
-              size={Math.round(14 * fontScale)}
-              color={accentColor}
-              strokeWidth={1.5}
-            />
+            {track.isPlaying ? (
+              <IconMusic
+                size={Math.round(14 * fontScale)}
+                color={accentColor}
+                strokeWidth={1.5}
+              />
+            ) : (
+              <IconPlayerPauseFilled
+                size={Math.round(14 * fontScale)}
+                color="rgba(255,255,255,0.4)"
+              />
+            )}
             <div
               style={{
                 fontSize: `${titleSize}px`,
