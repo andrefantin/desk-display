@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { IconCalendarEvent } from "@tabler/icons-react";
 import type { CalendarEvent } from "@/lib/types";
 
 interface EventsListProps {
@@ -58,11 +57,10 @@ export default function EventsList({
       }}
     >
       {events.length > 0 && (
-        <IconCalendarEvent
-          size={28}
-          color={accentColor}
-          strokeWidth={1.5}
-          style={{ marginBottom: "16px" }}
+        <img
+          src="/weather-icons/calendar.png"
+          alt="calendar"
+          style={{ width: "28px", height: "28px", objectFit: "contain", marginBottom: "16px" }}
         />
       )}
 
@@ -72,7 +70,7 @@ export default function EventsList({
             display: "flex",
             flexDirection: "column",
             gap: "12px",
-            marginTop: "8px",
+            marginTop: "auto",
           }}
         >
           <img

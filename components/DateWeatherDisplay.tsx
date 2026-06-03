@@ -1,15 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  IconSun,
-  IconSunHigh,
-  IconCloud,
-  IconCloudRain,
-  IconUmbrella,
-  IconCloudBolt,
-  IconSnowflake,
-} from "@tabler/icons-react";
 
 interface DateWeatherDisplayProps {
   accentColor: string;
@@ -21,27 +12,31 @@ interface DateWeatherDisplayProps {
 
 const DAY_ABBRS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
-function getWeatherIcon(code: number | null, size: number, color: string) {
+function getWeatherIcon(code: number | null): string | null {
   if (code === null) return null;
-  const props = { size, color, strokeWidth: 1.5 };
-  if (code === 0) return <IconSun {...props} />;
-  if (code === 1) return <IconSunHigh {...props} />;
-  if (code === 2 || code === 3) return <IconCloud {...props} />;
-  if (code === 45 || code === 48) return <IconCloud {...props} />;
-  if (code >= 51 && code <= 55) return <IconCloudRain {...props} />;
-  if (code >= 61 && code <= 65) return <IconUmbrella {...props} />;
-  if (code >= 71 && code <= 77) return <IconSnowflake {...props} />;
-  if (code >= 80 && code <= 82) return <IconUmbrella {...props} />;
-  if (code >= 85 && code <= 86) return <IconSnowflake {...props} />;
-  if (code >= 95) return <IconCloudBolt {...props} />;
-  return <IconCloud {...props} />;
+  const hour = new Date().getHours();
+  const isNight = hour < 6 || hour >= 20;
+
+  if (code === 0) return isNight ? "/weather-icons/Clear (Night).png" : "/weather-icons/Clear (Day).png";
+  if (code === 1) return "/weather-icons/Clear (Day).png";
+  if (code === 2) return "/weather-icons/Partially cloudy.png";
+  if (code === 3) return "/weather-icons/Cloudy.png";
+  if (code === 45 || code === 48) return "/weather-icons/Cloudy.png";
+  if (code >= 51 && code <= 53) return "/weather-icons/Drizzlling with sun.png";
+  if (code >= 54 && code <= 55) return "/weather-icons/Drizzling.png";
+  if (code >= 61 && code <= 65) return "/weather-icons/Rain.png";
+  if (code >= 71 && code <= 77) return "/weather-icons/Snowing.png";
+  if (code >= 80 && code <= 82) return "/weather-icons/Rain.png";
+  if (code >= 85 && code <= 86) return "/weather-icons/Light snow.png";
+  if (code === 95) return "/weather-icons/Thunder.png";
+  if (code >= 96) return "/weather-icons/Thunderstorm.png";
+  return "/weather-icons/Cloudy.png";
 }
 
 export default function DateWeatherDisplay({
   accentColor,
   fontScale,
   temperature,
-  unit,
   weatherCode,
 }: DateWeatherDisplayProps) {
   const [dayAbbr, setDayAbbr] = useState<string>("");
@@ -59,12 +54,11 @@ export default function DateWeatherDisplay({
   }, []);
 
   const tempDisplay =
-    temperature !== null && temperature !== undefined
-      ? `${temperature}°`
-      : "--°";
+    temperature !== null && temperature !== undefined ? `${temperature}°` : "--°";
 
   const fontSize = Math.round(40 * fontScale);
-  const iconSize = Math.round(32 * fontScale);
+  const iconSize = Math.round(44 * fontScale);
+  const iconSrc = getWeatherIcon(weatherCode);
 
   return (
     <div
@@ -73,14 +67,27 @@ export default function DateWeatherDisplay({
         fontWeight: 700,
         display: "flex",
         alignItems: "center",
-        gap: "12px",
+        justifyContent: "space-between",
         fontSize: `${fontSize}px`,
       }}
     >
-      <span style={{ color: accentColor }}>{dayAbbr}</span>
-      <span style={{ color: "white" }}>{dateNum}</span>
-      {getWeatherIcon(weatherCode, iconSize, "rgba(255,255,255,0.7)")}
-      <span style={{ color: "white" }}>{tempDisplay}</span>
+      {/* Left: day + date */}
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <span style={{ color: accentColor }}>{dayAbbr}</span>
+        <span style={{ color: "white" }}>{dateNum}</span>
+      </div>
+
+      {/* Right: weather icon + temperature */}
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        {iconSrc && (
+          <img
+            src={iconSrc}
+            alt="weather"
+            style={{ width: `${iconSize}px`, height: `${iconSize}px`, objectFit: "contain" }}
+          />
+        )}
+        <span style={{ color: "white" }}>{tempDisplay}</span>
+      </div>
     </div>
   );
 }
