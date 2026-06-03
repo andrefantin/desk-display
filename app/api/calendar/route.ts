@@ -1,21 +1,19 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+export const dynamic = "force-dynamic";
+
+import { getValidGoogleAccessToken } from "@/lib/google-tokens";
 import { getSettings } from "@/lib/settings";
 import { getUpcomingEvents } from "@/lib/google-calendar";
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const accessToken = await getValidGoogleAccessToken();
 
-    if (!session || !session.accessToken) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    if (!accessToken) {
+      return Response.json({ error: "No Google account connected" }, { status: 401 });
     }
 
     const settings = await getSettings();
-    const events = await getUpcomingEvents(
-      session.accessToken,
-      settings.calendarId
-    );
+    const events = await getUpcomingEvents(accessToken, settings.calendarId);
 
     return Response.json(events);
   } catch (error) {

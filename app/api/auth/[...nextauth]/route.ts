@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import type { NextAuthOptions } from "next-auth";
+import { saveGoogleTokens } from "@/lib/google-tokens";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -25,6 +26,12 @@ export const authOptions: NextAuthOptions = {
       if (account) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
+        // Persist tokens to KV so the display can use them without a session
+        await saveGoogleTokens({
+          accessToken: account.access_token ?? "",
+          refreshToken: account.refresh_token ?? "",
+          expiresAt: account.expires_at ? account.expires_at * 1000 : Date.now() + 3600 * 1000,
+        });
       }
       return token;
     },
