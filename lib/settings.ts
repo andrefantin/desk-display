@@ -1,32 +1,21 @@
+import { promises as fs } from "fs";
+import path from "path";
 import type { DisplaySettings } from "./types";
+import { DEFAULT_SETTINGS } from "./defaults";
 
-export const DEFAULT_SETTINGS: DisplaySettings = {
-  accentColor: "#81c07d",
-  backgroundColor: "#1e1e1e",
-  fontScale: 1.0,
-  location: {
-    city: "Dublin",
-    lat: 53.3498,
-    lng: -6.2603,
-  },
-  temperatureUnit: "C",
-  calendarId: "primary",
-};
+export { DEFAULT_SETTINGS };
+
+const SETTINGS_PATH = path.join("/tmp", "display_settings.json");
 
 export async function getSettings(): Promise<DisplaySettings> {
   try {
-    const { kv } = await import("@vercel/kv");
-    const settings = await kv.get<DisplaySettings>("display_settings");
-    if (!settings) {
-      return DEFAULT_SETTINGS;
-    }
-    return settings;
+    const raw = await fs.readFile(SETTINGS_PATH, "utf-8");
+    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
   } catch {
     return DEFAULT_SETTINGS;
   }
 }
 
 export async function saveSettings(settings: DisplaySettings): Promise<void> {
-  const { kv } = await import("@vercel/kv");
-  await kv.set("display_settings", settings);
+  await fs.writeFile(SETTINGS_PATH, JSON.stringify(settings), "utf-8");
 }

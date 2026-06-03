@@ -6,7 +6,7 @@ import DateWeatherDisplay from "@/components/DateWeatherDisplay";
 import EventsList from "@/components/EventsList";
 import MeetingBuzz from "@/components/MeetingBuzz";
 import type { DisplaySettings, WeatherData, CalendarEvent } from "@/lib/types";
-import { DEFAULT_SETTINGS } from "@/lib/settings";
+import { DEFAULT_SETTINGS } from "@/lib/defaults";
 
 const DISPLAY_WIDTH = 960;
 const DISPLAY_HEIGHT = 540;

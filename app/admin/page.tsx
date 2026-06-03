@@ -7,7 +7,7 @@ import ThemeSettings from "@/components/admin/ThemeSettings";
 import LocationSettings from "@/components/admin/LocationSettings";
 import CalendarSettings from "@/components/admin/CalendarSettings";
 import type { DisplaySettings } from "@/lib/types";
-import { DEFAULT_SETTINGS } from "@/lib/settings";
+import { DEFAULT_SETTINGS } from "@/lib/defaults";
 
 export default function AdminPage() {
   const { data: session, status } = useSession();
