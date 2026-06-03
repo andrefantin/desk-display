@@ -1,4 +1,4 @@
-import { put, list, getDownloadUrl } from "@vercel/blob";
+import { put, list } from "@vercel/blob";
 import type { DisplaySettings } from "./types";
 import { DEFAULT_SETTINGS } from "./defaults";
 
@@ -10,8 +10,7 @@ export async function getSettings(): Promise<DisplaySettings> {
   try {
     const { blobs } = await list({ prefix: SETTINGS_FILENAME });
     if (blobs.length === 0) return DEFAULT_SETTINGS;
-    const downloadUrl = await getDownloadUrl(blobs[0].url);
-    const res = await fetch(downloadUrl);
+    const res = await fetch(blobs[0].downloadUrl, { cache: "no-store" });
     if (!res.ok) return DEFAULT_SETTINGS;
     const data = await res.json();
     return { ...DEFAULT_SETTINGS, ...data };
