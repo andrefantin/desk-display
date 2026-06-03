@@ -57,12 +57,14 @@ export default function EventsList({
         paddingTop: "8px",
       }}
     >
-      <IconCalendarEvent
-        size={28}
-        color={accentColor}
-        strokeWidth={1.5}
-        style={{ marginBottom: "16px" }}
-      />
+      {events.length > 0 && (
+        <IconCalendarEvent
+          size={28}
+          color={accentColor}
+          strokeWidth={1.5}
+          style={{ marginBottom: "16px" }}
+        />
+      )}
 
       {events.length === 0 ? (
         <div
