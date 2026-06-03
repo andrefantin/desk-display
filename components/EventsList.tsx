@@ -67,15 +67,28 @@ export default function EventsList({
       {events.length === 0 ? (
         <div
           style={{
-            color: "white",
-            fontSize: `${timeFontSize}px`,
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
             marginTop: "8px",
-            lineHeight: 1.5,
-            opacity: 0.8,
           }}
         >
-          You&apos;re all clear —<br />
-          no meetings left today!
+          <img
+            src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExNDQ3dnhibHhlejU0eTN1NzJkdXdyOWMzNTdlbThxdWV4cmh1ZmRvMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/14kqI3Y4urS3rG/giphy.gif"
+            alt="No meetings"
+            style={{ width: "100%", borderRadius: "8px", objectFit: "cover" }}
+          />
+          <div
+            style={{
+              color: "white",
+              fontSize: `${timeFontSize}px`,
+              lineHeight: 1.5,
+              opacity: 0.8,
+            }}
+          >
+            You&apos;re all clear —<br />
+            no meetings left today!
+          </div>
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
