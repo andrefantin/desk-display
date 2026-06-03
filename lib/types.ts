@@ -23,3 +23,18 @@ export interface WeatherData {
   unit: "C" | "F";
   weatherCode: number;
 }
+
+export interface SpotifyTokens {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number;
+}
+
+export interface SpotifyTrack {
+  isPlaying: boolean;
+  title: string;
+  artist: string;
+  albumArt: string | null;
+  progressMs: number;
+  durationMs: number;
+}

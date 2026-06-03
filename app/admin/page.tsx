@@ -1,23 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ThemeSettings from "@/components/admin/ThemeSettings";
 import LocationSettings from "@/components/admin/LocationSettings";
 import CalendarSettings from "@/components/admin/CalendarSettings";
+import SpotifySettings from "@/components/admin/SpotifySettings";
 import type { DisplaySettings } from "@/lib/types";
 import { DEFAULT_SETTINGS } from "@/lib/defaults";
 
-export default function AdminPage() {
+function AdminPageInner() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [settings, setSettings] = useState<DisplaySettings>(DEFAULT_SETTINGS);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
+  const [spotifyConnected, setSpotifyConnected] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -26,12 +29,30 @@ export default function AdminPage() {
   }, [status, router]);
 
   useEffect(() => {
+    const spotifyParam = searchParams.get("spotify");
+    if (spotifyParam === "connected") {
+      setSaveMessage({ type: "success", text: "Spotify connected successfully" });
+      setTimeout(() => setSaveMessage(null), 4000);
+    } else if (spotifyParam === "error") {
+      setSaveMessage({ type: "error", text: "Spotify connection failed — please try again" });
+      setTimeout(() => setSaveMessage(null), 4000);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     const loadSettings = async () => {
       try {
-        const res = await fetch("/api/settings");
-        if (res.ok) {
-          const data = await res.json();
+        const [settingsRes, spotifyRes] = await Promise.all([
+          fetch("/api/settings"),
+          fetch("/api/spotify/status"),
+        ]);
+        if (settingsRes.ok) {
+          const data = await settingsRes.json();
           setSettings(data);
+        }
+        if (spotifyRes.ok) {
+          const data = await spotifyRes.json();
+          setSpotifyConnected(data.connected);
         }
       } catch {
         // use defaults
@@ -262,7 +283,26 @@ export default function AdminPage() {
             session={session}
           />
         </section>
+
+        <section
+          style={{
+            padding: "28px",
+            backgroundColor: "rgba(255,255,255,0.03)",
+            borderRadius: "12px",
+            border: "1px solid rgba(255,255,255,0.07)",
+          }}
+        >
+          <SpotifySettings connected={spotifyConnected} />
+        </section>
       </div>
     </div>
+  );
+}
+
+export default function AdminPage() {
+  return (
+    <Suspense>
+      <AdminPageInner />
+    </Suspense>
   );
 }

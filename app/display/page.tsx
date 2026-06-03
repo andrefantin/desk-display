@@ -5,7 +5,8 @@ import ClockDisplay from "@/components/ClockDisplay";
 import DateWeatherDisplay from "@/components/DateWeatherDisplay";
 import EventsList from "@/components/EventsList";
 import MeetingBuzz from "@/components/MeetingBuzz";
-import type { DisplaySettings, WeatherData, CalendarEvent } from "@/lib/types";
+import SpotifyDisplay from "@/components/SpotifyDisplay";
+import type { DisplaySettings, WeatherData, CalendarEvent, SpotifyTrack } from "@/lib/types";
 import { DEFAULT_SETTINGS } from "@/lib/defaults";
 
 const DISPLAY_WIDTH = 960;
@@ -15,6 +16,7 @@ export default function DisplayPage() {
   const [settings, setSettings] = useState<DisplaySettings>(DEFAULT_SETTINGS);
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [track, setTrack] = useState<SpotifyTrack | null>(null);
   const [loading, setLoading] = useState(true);
   const [scale, setScale] = useState(1);
 
@@ -74,18 +76,33 @@ export default function DisplayPage() {
     }
   }, []);
 
+  const fetchTrack = useCallback(async () => {
+    try {
+      const res = await fetch("/api/spotify");
+      if (res.ok) {
+        const data = await res.json();
+        setTrack(data);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
   useEffect(() => {
     let weatherInterval: NodeJS.Timeout;
     let eventsInterval: NodeJS.Timeout;
+    let trackInterval: NodeJS.Timeout;
 
     const init = async () => {
       const s = await fetchSettings();
       await fetchWeather(s);
       await fetchEvents();
+      fetchTrack();
       setLoading(false);
 
       weatherInterval = setInterval(() => fetchWeather(s), 10 * 60 * 1000);
       eventsInterval = setInterval(fetchEvents, 2 * 60 * 1000);
+      trackInterval = setInterval(fetchTrack, 15 * 1000);
     };
 
     init();
@@ -93,8 +110,9 @@ export default function DisplayPage() {
     return () => {
       clearInterval(weatherInterval);
       clearInterval(eventsInterval);
+      clearInterval(trackInterval);
     };
-  }, [fetchSettings, fetchWeather, fetchEvents]);
+  }, [fetchSettings, fetchWeather, fetchEvents, fetchTrack]);
 
   if (loading) {
     return (
@@ -158,13 +176,22 @@ export default function DisplayPage() {
             accentColor={settings.accentColor}
             fontScale={settings.fontScale}
           />
-          <DateWeatherDisplay
-            accentColor={settings.accentColor}
-            fontScale={settings.fontScale}
-            temperature={weather?.temperature ?? null}
-            unit={settings.temperatureUnit}
-            weatherCode={weather?.weatherCode ?? null}
-          />
+          <div>
+            <DateWeatherDisplay
+              accentColor={settings.accentColor}
+              fontScale={settings.fontScale}
+              temperature={weather?.temperature ?? null}
+              unit={settings.temperatureUnit}
+              weatherCode={weather?.weatherCode ?? null}
+            />
+            <div style={{ marginTop: "16px" }}>
+              <SpotifyDisplay
+                track={track}
+                accentColor={settings.accentColor}
+                fontScale={settings.fontScale}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Right panel ~45% */}

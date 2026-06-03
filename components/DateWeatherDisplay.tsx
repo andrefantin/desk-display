@@ -63,27 +63,24 @@ export default function DateWeatherDisplay({
       ? `${temperature}°`
       : "--°";
 
-  const baseFontSize = Math.round(48 * fontScale);
-  const iconSize = Math.round(40 * fontScale);
+  const fontSize = Math.round(40 * fontScale);
+  const iconSize = Math.round(32 * fontScale);
 
   return (
-    <div style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700 }}>
-      <div style={{ fontSize: `${baseFontSize}px`, marginBottom: "4px" }}>
-        <span style={{ color: accentColor }}>{dayAbbr}</span>
-        <span style={{ color: "white" }}> {dateNum}</span>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-          fontSize: `${baseFontSize}px`,
-          color: "white",
-        }}
-      >
-        {getWeatherIcon(weatherCode, iconSize, accentColor)}
-        <span>{tempDisplay}</span>
-      </div>
+    <div
+      style={{
+        fontFamily: "'Barlow', sans-serif",
+        fontWeight: 700,
+        display: "flex",
+        alignItems: "center",
+        gap: "12px",
+        fontSize: `${fontSize}px`,
+      }}
+    >
+      <span style={{ color: accentColor }}>{dayAbbr}</span>
+      <span style={{ color: "white" }}>{dateNum}</span>
+      {getWeatherIcon(weatherCode, iconSize, "rgba(255,255,255,0.7)")}
+      <span style={{ color: "white" }}>{tempDisplay}</span>
     </div>
   );
 }
