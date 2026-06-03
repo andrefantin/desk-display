@@ -1,21 +1,51 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import {
+  IconSunFilled,
+  IconSunHighFilled,
+  IconCloudFilled,
+  IconDropletFilled,
+  IconDropletsFilled,
+  IconBoltFilled,
+  IconSnowflake,
+} from "@tabler/icons-react";
 
 interface DateWeatherDisplayProps {
   accentColor: string;
   fontScale: number;
   temperature: number | null;
   unit: "C" | "F";
+  weatherCode: number | null;
 }
 
 const DAY_ABBRS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+
+function getWeatherIcon(code: number | null, size: number, color: string) {
+  if (code === null) return null;
+
+  const props = { size, color };
+
+  if (code === 0) return <IconSunFilled {...props} />;
+  if (code === 1) return <IconSunHighFilled {...props} />;
+  if (code === 2 || code === 3) return <IconCloudFilled {...props} />;
+  if (code === 45 || code === 48) return <IconCloudFilled {...props} />;
+  if (code >= 51 && code <= 55) return <IconDropletFilled {...props} />;
+  if (code >= 61 && code <= 65) return <IconDropletsFilled {...props} />;
+  if (code >= 71 && code <= 77) return <IconSnowflake {...props} />;
+  if (code >= 80 && code <= 82) return <IconDropletsFilled {...props} />;
+  if (code >= 85 && code <= 86) return <IconSnowflake {...props} />;
+  if (code >= 95) return <IconBoltFilled {...props} />;
+
+  return <IconCloudFilled {...props} />;
+}
 
 export default function DateWeatherDisplay({
   accentColor,
   fontScale,
   temperature,
   unit,
+  weatherCode,
 }: DateWeatherDisplayProps) {
   const [dayAbbr, setDayAbbr] = useState<string>("");
   const [dateNum, setDateNum] = useState<number>(0);
@@ -38,6 +68,7 @@ export default function DateWeatherDisplay({
       : "--°";
 
   const baseFontSize = Math.round(48 * fontScale);
+  const iconSize = Math.round(40 * fontScale);
 
   return (
     <div
@@ -50,10 +81,28 @@ export default function DateWeatherDisplay({
         <span style={{ color: accentColor }}>{dayAbbr}</span>
         <span style={{ color: "white" }}> {dateNum}</span>
       </div>
-      <div style={{ fontSize: `${baseFontSize}px`, color: "white" }}>
-        {tempDisplay}
-        <span style={{ fontSize: `${Math.round(24 * fontScale)}px`, marginLeft: "4px", fontWeight: 400, color: "rgba(255,255,255,0.6)" }}>
-          °{unit}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          fontSize: `${baseFontSize}px`,
+          color: "white",
+        }}
+      >
+        {getWeatherIcon(weatherCode, iconSize, accentColor)}
+        <span>
+          {tempDisplay}
+          <span
+            style={{
+              fontSize: `${Math.round(24 * fontScale)}px`,
+              marginLeft: "4px",
+              fontWeight: 400,
+              color: "rgba(255,255,255,0.6)",
+            }}
+          >
+            °{unit}
+          </span>
         </span>
       </div>
     </div>

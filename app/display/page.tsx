@@ -164,6 +164,7 @@ export default function DisplayPage() {
               fontScale={settings.fontScale}
               temperature={weather?.temperature ?? null}
               unit={settings.temperatureUnit}
+              weatherCode={weather?.weatherCode ?? null}
             />
           </div>
         </div>
