@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { IconCalendar } from "@tabler/icons-react";
+import { IconCalendarEvent } from "@tabler/icons-react";
 import type { CalendarEvent } from "@/lib/types";
 
 interface EventsListProps {
@@ -57,7 +57,7 @@ export default function EventsList({
         paddingTop: "8px",
       }}
     >
-      <IconCalendar
+      <IconCalendarEvent
         size={28}
         color={accentColor}
         strokeWidth={1.5}

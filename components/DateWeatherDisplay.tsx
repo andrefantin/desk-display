@@ -5,9 +5,9 @@ import {
   IconSun,
   IconSunHigh,
   IconCloud,
-  IconDroplet,
-  IconDroplets,
-  IconBolt,
+  IconCloudRain,
+  IconUmbrella,
+  IconCloudBolt,
   IconSnowflake,
 } from "@tabler/icons-react";
 
@@ -28,12 +28,12 @@ function getWeatherIcon(code: number | null, size: number, color: string) {
   if (code === 1) return <IconSunHigh {...props} />;
   if (code === 2 || code === 3) return <IconCloud {...props} />;
   if (code === 45 || code === 48) return <IconCloud {...props} />;
-  if (code >= 51 && code <= 55) return <IconDroplet {...props} />;
-  if (code >= 61 && code <= 65) return <IconDroplets {...props} />;
+  if (code >= 51 && code <= 55) return <IconCloudRain {...props} />;
+  if (code >= 61 && code <= 65) return <IconUmbrella {...props} />;
   if (code >= 71 && code <= 77) return <IconSnowflake {...props} />;
-  if (code >= 80 && code <= 82) return <IconDroplets {...props} />;
+  if (code >= 80 && code <= 82) return <IconUmbrella {...props} />;
   if (code >= 85 && code <= 86) return <IconSnowflake {...props} />;
-  if (code >= 95) return <IconBolt {...props} />;
+  if (code >= 95) return <IconCloudBolt {...props} />;
   return <IconCloud {...props} />;
 }
 

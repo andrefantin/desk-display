@@ -13,10 +13,14 @@ export async function getUpcomingEvents(
 
     const IGNORED_TITLES = ["home", "lunch"];
 
-    const now = new Date().toISOString();
+    const now = new Date();
+    const endOfDay = new Date(now);
+    endOfDay.setHours(23, 59, 59, 999);
+
     const response = await calendar.events.list({
       calendarId,
-      timeMin: now,
+      timeMin: now.toISOString(),
+      timeMax: endOfDay.toISOString(),
       maxResults: 10,
       singleEvents: true,
       orderBy: "startTime",
