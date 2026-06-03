@@ -172,26 +172,28 @@ export default function DisplayPage() {
             padding: "32px 24px 48px 48px",
           }}
         >
-          <ClockDisplay
-            accentColor={settings.accentColor}
-            fontScale={settings.fontScale}
-          />
+          {/* Top: clock + date/weather */}
           <div>
-            <DateWeatherDisplay
+            <ClockDisplay
               accentColor={settings.accentColor}
               fontScale={settings.fontScale}
-              temperature={weather?.temperature ?? null}
-              unit={settings.temperatureUnit}
-              weatherCode={weather?.weatherCode ?? null}
             />
             <div style={{ marginTop: "16px" }}>
-              <SpotifyDisplay
-                track={track}
+              <DateWeatherDisplay
                 accentColor={settings.accentColor}
                 fontScale={settings.fontScale}
+                temperature={weather?.temperature ?? null}
+                unit={settings.temperatureUnit}
+                weatherCode={weather?.weatherCode ?? null}
               />
             </div>
           </div>
+          {/* Bottom: Spotify */}
+          <SpotifyDisplay
+            track={track}
+            accentColor={settings.accentColor}
+            fontScale={settings.fontScale}
+          />
         </div>
 
         {/* Right panel ~45% */}
