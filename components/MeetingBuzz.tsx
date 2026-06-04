@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { CalendarEvent } from "@/lib/types";
 
 interface MeetingBuzzProps {
@@ -8,6 +8,8 @@ interface MeetingBuzzProps {
 }
 
 export default function MeetingBuzz({ events }: MeetingBuzzProps) {
+  const [activeEvent, setActiveEvent] = useState<CalendarEvent | null>(null);
+
   useEffect(() => {
     const checkMeetings = () => {
       const now = new Date();
@@ -25,12 +27,8 @@ export default function MeetingBuzz({ events }: MeetingBuzzProps) {
 
           if (!localStorage.getItem(storageKey)) {
             localStorage.setItem(storageKey, "true");
-
-            document.body.classList.add("meeting-buzz");
-            setTimeout(() => {
-              document.body.classList.remove("meeting-buzz");
-            }, 7000);
-
+            setActiveEvent(event);
+            setTimeout(() => setActiveEvent(null), 60000);
             break;
           }
         }
@@ -38,9 +36,44 @@ export default function MeetingBuzz({ events }: MeetingBuzzProps) {
     };
 
     checkMeetings();
-    const interval = setInterval(checkMeetings, 30000);
+    const interval = setInterval(checkMeetings, 15000);
     return () => clearInterval(interval);
   }, [events]);
 
-  return null;
+  if (!activeEvent) return null;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        backgroundColor: "#1e1e1e",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 100,
+        gap: "24px",
+      }}
+    >
+      <img
+        src="https://media.giphy.com/media/MFsSDodJHKcn1jbspn/giphy.gif"
+        alt="Meeting alert"
+        style={{ width: "480px", borderRadius: "12px" }}
+      />
+      <div
+        style={{
+          fontFamily: "'Barlow', sans-serif",
+          textAlign: "center",
+        }}
+      >
+        <div style={{ color: "#81c07d", fontSize: "20px", fontWeight: 600 }}>
+          Starting in 1 minute
+        </div>
+        <div style={{ color: "white", fontSize: "32px", fontWeight: 700, marginTop: "6px" }}>
+          {activeEvent.title}
+        </div>
+      </div>
+    </div>
+  );
 }
