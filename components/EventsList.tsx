@@ -31,6 +31,13 @@ function isOngoing(startTime: string, endTime: string, now: Date): boolean {
   return now >= start && now <= end;
 }
 
+function getProgress(startTime: string, endTime: string, now: Date): number {
+  const start = new Date(startTime).getTime();
+  const end = new Date(endTime).getTime();
+  const current = now.getTime();
+  return Math.min(100, Math.max(0, ((current - start) / (end - start)) * 100));
+}
+
 export default function EventsList({
   events,
   accentColor,
@@ -39,7 +46,7 @@ export default function EventsList({
   const [now, setNow] = useState<Date>(new Date());
 
   useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 30000);
+    const interval = setInterval(() => setNow(new Date()), 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -94,6 +101,7 @@ export default function EventsList({
         <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
           {events.slice(0, 3).map((event, index) => {
             const ongoing = isOngoing(event.startTime, event.endTime, now);
+            const progress = ongoing ? getProgress(event.startTime, event.endTime, now) : 0;
             return (
               <div key={event.id}>
                 {index > 0 && (
@@ -136,6 +144,26 @@ export default function EventsList({
                   >
                     {event.title}
                   </div>
+                  {ongoing && (
+                    <div
+                      style={{
+                        marginTop: "8px",
+                        height: "3px",
+                        backgroundColor: "rgba(255,255,255,0.15)",
+                        borderRadius: "2px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: `${progress}%`,
+                          height: "100%",
+                          backgroundColor: accentColor,
+                          borderRadius: "2px",
+                          transition: "width 60s linear",
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             );
