@@ -63,14 +63,6 @@ export default function EventsList({
         paddingTop: "8px",
       }}
     >
-      {events.length > 0 && (
-        <img
-          src="/weather-icons/calendar.png"
-          alt="calendar"
-          style={{ width: "28px", height: "28px", objectFit: "contain", marginBottom: "16px" }}
-        />
-      )}
-
       {events.length === 0 ? (
         <div
           style={{
