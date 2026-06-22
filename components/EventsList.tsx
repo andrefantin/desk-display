@@ -6,162 +6,163 @@ import type { CalendarEvent } from "@/lib/types";
 interface EventsListProps {
   events: CalendarEvent[];
   accentColor: string;
-  fontScale: number;
+  timeFormat: "12h" | "24h";
+  celebrating: boolean;
 }
 
-function formatTime(isoString: string): string {
+function formatStart(isoString: string, timeFormat: "12h" | "24h"): string {
   if (!isoString) return "";
   try {
     const date = new Date(isoString);
-    let hours = date.getHours();
     const minutes = String(date.getMinutes()).padStart(2, "0");
-    const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12;
-    if (hours === 0) hours = 12;
-    return `${hours}:${minutes} ${ampm}`;
+    if (timeFormat === "12h") {
+      let hours = date.getHours() % 12;
+      const ampm = date.getHours() >= 12 ? "pm" : "am";
+      if (hours === 0) hours = 12;
+      return `${String(hours).padStart(2, "0")}:${minutes}${ampm}`;
+    }
+    const hours = String(date.getHours()).padStart(2, "0");
+    return `${hours}:${minutes}`;
   } catch {
     return "";
   }
 }
 
+function formatDuration(startTime: string, endTime: string): string {
+  if (!startTime || !endTime) return "";
+  const ms = new Date(endTime).getTime() - new Date(startTime).getTime();
+  if (!Number.isFinite(ms) || ms <= 0) return "";
+  const totalMin = Math.round(ms / 60000);
+  const hours = Math.floor(totalMin / 60);
+  const mins = totalMin % 60;
+  if (hours === 0) return `${mins}m`;
+  if (mins === 0) return `${hours}h`;
+  return `${hours}h${mins}m`;
+}
+
 function isOngoing(startTime: string, endTime: string, now: Date): boolean {
   if (!startTime || !endTime) return false;
-  const start = new Date(startTime);
-  const end = new Date(endTime);
-  return now >= start && now <= end;
+  return now >= new Date(startTime) && now <= new Date(endTime);
 }
 
 function getProgress(startTime: string, endTime: string, now: Date): number {
   const start = new Date(startTime).getTime();
   const end = new Date(endTime).getTime();
-  const current = now.getTime();
-  return Math.min(100, Math.max(0, ((current - start) / (end - start)) * 100));
+  return Math.min(100, Math.max(0, ((now.getTime() - start) / (end - start)) * 100));
 }
 
 export default function EventsList({
   events,
   accentColor,
-  fontScale,
+  timeFormat,
+  celebrating,
 }: EventsListProps) {
   const [now, setNow] = useState<Date>(new Date());
 
   useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 60000);
+    const interval = setInterval(() => setNow(new Date()), 30000);
     return () => clearInterval(interval);
   }, []);
 
-  const timeFontSize = Math.round(20 * fontScale);
-  const titleFontSize = Math.round(28 * fontScale);
-
-  return (
-    <div
-      style={{
-        fontFamily: "'Barlow', sans-serif",
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        paddingTop: "8px",
-      }}
-    >
-      {events.length === 0 ? (
-        <div
+  if (events.length === 0) {
+    // While the celebration is running the page shows fireworks instead.
+    if (celebrating) return null;
+    return (
+      <div
+        style={{
+          fontFamily: "var(--font-space-grotesk), sans-serif",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          height: "109px",
+          boxSizing: "border-box",
+          padding: "16px 20px",
+          border: "1px solid #ffffff",
+          borderRadius: "16px",
+        }}
+      >
+        <span
           style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "12px",
-            marginTop: "auto",
+            fontWeight: 500,
+            fontSize: "16px",
+            color: "#000000",
+            opacity: 0.5,
+            textAlign: "center",
           }}
         >
-          <img
-            src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExNDQ3dnhibHhlejU0eTN1NzJkdXdyOWMzNTdlbThxdWV4cmh1ZmRvMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/14kqI3Y4urS3rG/giphy.gif"
-            alt="No meetings"
-            style={{ width: "100%", borderRadius: "8px", objectFit: "cover" }}
-          />
+          You don’t have more meetings today
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: "flex", gap: "12px", alignItems: "stretch", width: "100%" }}>
+      {events.slice(0, 3).map((event) => {
+        const ongoing = isOngoing(event.startTime, event.endTime, now);
+        const progress = ongoing ? getProgress(event.startTime, event.endTime, now) : 0;
+        const duration = formatDuration(event.startTime, event.endTime);
+        return (
           <div
+            key={event.id}
             style={{
-              color: "white",
-              fontSize: `${timeFontSize}px`,
-              lineHeight: 1.5,
-              opacity: 0.8,
+              fontFamily: "var(--font-space-grotesk), sans-serif",
+              fontWeight: 500,
+              flex: "1 1 0",
+              minWidth: 0,
+              display: "flex",
+              flexDirection: "column",
+              gap: "21px",
+              padding: "16px 20px",
+              borderRadius: "16px",
+              position: "relative",
+              overflow: "hidden",
+              backgroundColor: ongoing ? "#ffffff" : "transparent",
+              border: ongoing ? "1px solid transparent" : "1px solid #ffffff",
             }}
           >
-            You&apos;re all clear —<br />
-            no meetings left today!
+            <div
+              style={{
+                display: "flex",
+                gap: "21px",
+                alignItems: "flex-start",
+                fontSize: "16px",
+                color: "#000000",
+                whiteSpace: "nowrap",
+              }}
+            >
+              <span
+                style={{
+                  flex: "1 1 0",
+                  minWidth: 0,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {event.title}
+              </span>
+              {duration && <span style={{ flexShrink: 0 }}>{duration}</span>}
+            </div>
+            <div style={{ fontSize: "28px", color: "#000000" }}>
+              {formatStart(event.startTime, timeFormat)}
+            </div>
+            {ongoing && (
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  width: `${progress}%`,
+                  height: "4px",
+                  backgroundColor: accentColor,
+                  transition: "width 30s linear",
+                }}
+              />
+            )}
           </div>
-        </div>
-      ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-          {events.slice(0, 3).map((event, index) => {
-            const ongoing = isOngoing(event.startTime, event.endTime, now);
-            const progress = ongoing ? getProgress(event.startTime, event.endTime, now) : 0;
-            return (
-              <div key={event.id}>
-                {index > 0 && (
-                  <div
-                    style={{
-                      height: "1px",
-                      backgroundColor: accentColor,
-                      opacity: 0.3,
-                      marginTop: "12px",
-                      marginBottom: "12px",
-                    }}
-                  />
-                )}
-                <div
-                  style={{
-                    padding: ongoing ? "8px 10px" : "0",
-                    borderRadius: ongoing ? "6px" : "0",
-                    backgroundColor: ongoing ? `${accentColor}22` : "transparent",
-                    borderLeft: ongoing ? `3px solid ${accentColor}` : "none",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: `${timeFontSize}px`,
-                      color: ongoing ? accentColor : "white",
-                      opacity: ongoing ? 1 : 0.7,
-                      fontWeight: ongoing ? 600 : 400,
-                      marginBottom: "2px",
-                    }}
-                  >
-                    {ongoing ? "NOW  " : ""}{formatTime(event.startTime)}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: `${titleFontSize}px`,
-                      color: "white",
-                      fontWeight: 700,
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    {event.title}
-                  </div>
-                  {ongoing && (
-                    <div
-                      style={{
-                        marginTop: "8px",
-                        height: "3px",
-                        backgroundColor: "rgba(255,255,255,0.15)",
-                        borderRadius: "2px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: `${progress}%`,
-                          height: "100%",
-                          backgroundColor: accentColor,
-                          borderRadius: "2px",
-                          transition: "width 60s linear",
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+        );
+      })}
     </div>
   );
 }

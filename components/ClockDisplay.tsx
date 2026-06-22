@@ -3,42 +3,46 @@
 import { useState, useEffect } from "react";
 
 interface ClockDisplayProps {
-  accentColor: string;
-  fontScale: number;
+  color: string;
+  timeFormat: "12h" | "24h";
 }
 
-export default function ClockDisplay({
-  accentColor,
-  fontScale,
-}: ClockDisplayProps) {
+function formatClock(now: Date, timeFormat: "12h" | "24h"): string {
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+  if (timeFormat === "12h") {
+    let hours = now.getHours() % 12;
+    if (hours === 0) hours = 12;
+    return `${String(hours).padStart(2, "0")}:${minutes}:${seconds}`;
+  }
+  const hours = String(now.getHours()).padStart(2, "0");
+  return `${hours}:${minutes}:${seconds}`;
+}
+
+export default function ClockDisplay({ color, timeFormat }: ClockDisplayProps) {
   const [time, setTime] = useState<string>("");
 
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const hours = String(now.getHours()).padStart(2, "0");
-      const minutes = String(now.getMinutes()).padStart(2, "0");
-      setTime(`${hours}:${minutes}`);
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-
+    const update = () => setTime(formatClock(new Date(), timeFormat));
+    update();
+    const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [timeFormat]);
 
-  return (
-    <div
-      style={{
-        fontFamily: "'Oswald', sans-serif",
-        fontSize: `calc(200px * ${fontScale})`,
-        color: accentColor,
-        fontWeight: 700,
-        lineHeight: 1,
-        letterSpacing: "-0.02em",
-      }}
-    >
-      {time}
-    </div>
-  );
+  // Trim the line box to the cap height so the digits align exactly to the top
+  // of the layout (mirrors Figma's text-box-trim). Set inline rather than via a
+  // CSS class because Tailwind v4's Lightning CSS strips these newer properties.
+  const style: React.CSSProperties = {
+    fontFamily: "var(--font-concert-one), sans-serif",
+    fontSize: "256px",
+    lineHeight: "normal",
+    color,
+    textAlign: "center",
+    whiteSpace: "nowrap",
+  };
+  const styleWithTrim = style as Record<string, string>;
+  styleWithTrim.textBoxTrim = "trim-both";
+  styleWithTrim.textBoxEdge = "cap alphabetic";
+
+  return <div style={style}>{time}</div>;
 }

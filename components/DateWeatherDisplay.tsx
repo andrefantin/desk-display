@@ -3,14 +3,11 @@
 import { useState, useEffect } from "react";
 
 interface DateWeatherDisplayProps {
-  accentColor: string;
-  fontScale: number;
   temperature: number | null;
-  unit: "C" | "F";
   weatherCode: number | null;
 }
 
-const DAY_ABBRS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+const DAY_ABBRS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function getWeatherIcon(code: number | null): string | null {
   if (code === null) return null;
@@ -34,8 +31,6 @@ function getWeatherIcon(code: number | null): string | null {
 }
 
 export default function DateWeatherDisplay({
-  accentColor,
-  fontScale,
   temperature,
   weatherCode,
 }: DateWeatherDisplayProps) {
@@ -54,39 +49,35 @@ export default function DateWeatherDisplay({
   }, []);
 
   const tempDisplay =
-    temperature !== null && temperature !== undefined ? `${temperature}°` : "--°";
-
-  const fontSize = Math.round(40 * fontScale);
-  const iconSize = Math.round(44 * fontScale);
+    temperature !== null && temperature !== undefined
+      ? `${Math.round(temperature * 10) / 10}º`
+      : "--º";
   const iconSrc = getWeatherIcon(weatherCode);
 
   return (
     <div
       style={{
-        fontFamily: "'Barlow', sans-serif",
+        fontFamily: "var(--font-space-grotesk), sans-serif",
         fontWeight: 700,
         display: "flex",
         alignItems: "center",
-        justifyContent: "space-between",
-        fontSize: `${fontSize}px`,
+        gap: "24px",
+        fontSize: "20px",
+        color: "#000000",
       }}
     >
-      {/* Left: day + date */}
-      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <span style={{ color: accentColor }}>{dayAbbr}</span>
-        <span style={{ color: "white" }}>{dateNum}</span>
-      </div>
-
-      {/* Right: weather icon + temperature */}
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+      <span>
+        {dayAbbr} {dateNum}
+      </span>
+      <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
         {iconSrc && (
           <img
             src={iconSrc}
             alt="weather"
-            style={{ width: `${iconSize}px`, height: `${iconSize}px`, objectFit: "contain" }}
+            style={{ width: "24px", height: "24px", objectFit: "contain" }}
           />
         )}
-        <span style={{ color: "white" }}>{tempDisplay}</span>
+        <span>{tempDisplay}</span>
       </div>
     </div>
   );
