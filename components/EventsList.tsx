@@ -97,9 +97,28 @@ export default function EventsList({
     );
   }
 
+  // Always render three slots; fill empty ones with an outline-only placeholder.
   return (
     <div style={{ display: "flex", gap: "12px", alignItems: "stretch", width: "100%" }}>
-      {events.slice(0, 3).map((event) => {
+      {[0, 1, 2].map((slot) => {
+        const event = events[slot];
+
+        if (!event) {
+          return (
+            <div
+              key={`placeholder-${slot}`}
+              style={{
+                flex: "1 1 0",
+                minWidth: 0,
+                boxSizing: "border-box",
+                padding: "16px 20px",
+                borderRadius: "16px",
+                border: "1px solid #ffffff",
+              }}
+            />
+          );
+        }
+
         const ongoing = isOngoing(event.startTime, event.endTime, now);
         const progress = ongoing ? getProgress(event.startTime, event.endTime, now) : 0;
         const duration = formatDuration(event.startTime, event.endTime);
@@ -111,7 +130,7 @@ export default function EventsList({
               fontWeight: 500,
               flex: "1 1 0",
               minWidth: 0,
-              maxWidth: "436px",
+              boxSizing: "border-box",
               display: "flex",
               flexDirection: "column",
               gap: "21px",
