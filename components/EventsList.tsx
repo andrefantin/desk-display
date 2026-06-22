@@ -111,6 +111,7 @@ export default function EventsList({
               fontWeight: 500,
               flex: "1 1 0",
               minWidth: 0,
+              maxWidth: "436px",
               display: "flex",
               flexDirection: "column",
               gap: "21px",

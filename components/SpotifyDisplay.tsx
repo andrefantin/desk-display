@@ -23,6 +23,7 @@ export default function SpotifyDisplay({
         display: "flex",
         alignItems: "center",
         gap: "16px",
+        maxWidth: "283px",
       }}
     >
       {track.albumArt && (
@@ -44,6 +45,7 @@ export default function SpotifyDisplay({
           flexDirection: "column",
           justifyContent: "space-between",
           gap: "6px",
+          flex: "1 1 0",
           minWidth: 0,
         }}
       >
@@ -75,7 +77,7 @@ export default function SpotifyDisplay({
         </div>
         <div
           style={{
-            width: "227px",
+            width: "100%",
             height: "2px",
             backgroundColor: "rgba(0,0,0,0.1)",
             borderRadius: "2px",
