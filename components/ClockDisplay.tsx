@@ -33,8 +33,12 @@ export default function ClockDisplay({ color, timeFormat }: ClockDisplayProps) {
   // of the layout (mirrors Figma's text-box-trim). Set inline rather than via a
   // CSS class because Tailwind v4's Lightning CSS strips these newer properties.
   const style: React.CSSProperties = {
+    // Concert One is proportional ("1" is much narrower than "0"), so each
+    // character gets a fixed-width slot to keep the clock from shifting as the
+    // time changes. The font is slightly under the design's 256px so the widest
+    // possible time ("00:00:00") still fits the layout.
     fontFamily: "var(--font-concert-one), sans-serif",
-    fontSize: "256px",
+    fontSize: "230px",
     lineHeight: "normal",
     color,
     textAlign: "center",
@@ -44,5 +48,20 @@ export default function ClockDisplay({ color, timeFormat }: ClockDisplayProps) {
   styleWithTrim.textBoxTrim = "trim-both";
   styleWithTrim.textBoxEdge = "cap alphabetic";
 
-  return <div style={style}>{time}</div>;
+  return (
+    <div style={style}>
+      {time.split("").map((char, i) => (
+        <span
+          key={i}
+          style={{
+            display: "inline-block",
+            width: char === ":" ? "0.28em" : "0.56em",
+            textAlign: "center",
+          }}
+        >
+          {char}
+        </span>
+      ))}
+    </div>
+  );
 }
