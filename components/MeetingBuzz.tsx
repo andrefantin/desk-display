@@ -47,22 +47,23 @@ export default function MeetingBuzz({ events }: MeetingBuzzProps) {
       style={{
         position: "absolute",
         inset: 0,
-        backgroundColor: "#1e1e1e",
+        backgroundColor: "#e8e8e8",
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
         zIndex: 100,
-        gap: "48px",
-        padding: "40px",
+        gap: "64px",
+        padding: "64px",
+        fontFamily: "var(--font-space-grotesk), sans-serif",
       }}
     >
       {/* Left: text */}
-      <div style={{ fontFamily: "'Barlow', sans-serif", flex: 1 }}>
-        <div style={{ color: "#81c07d", fontSize: "22px", fontWeight: 600, marginBottom: "12px" }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ color: "#fc4646", fontSize: "28px", fontWeight: 700, marginBottom: "16px" }}>
           Starting in 1 minute
         </div>
-        <div style={{ color: "white", fontSize: "40px", fontWeight: 700, lineHeight: 1.2 }}>
+        <div style={{ color: "#000000", fontSize: "72px", fontWeight: 700, lineHeight: 1.1 }}>
           {activeEvent.title}
         </div>
       </div>
@@ -71,7 +72,7 @@ export default function MeetingBuzz({ events }: MeetingBuzzProps) {
       <img
         src="https://media.giphy.com/media/MFsSDodJHKcn1jbspn/giphy.gif"
         alt="Meeting alert"
-        style={{ height: "420px", borderRadius: "12px", objectFit: "cover" }}
+        style={{ height: "460px", borderRadius: "16px", objectFit: "cover", flexShrink: 0 }}
       />
     </div>
   );
