@@ -53,20 +53,20 @@ export default function MeetingBuzz({ events }: MeetingBuzzProps) {
         alignItems: "center",
         justifyContent: "center",
         zIndex: 100,
-        gap: "64px",
-        padding: "64px",
+        gap: "48px",
+        padding: "48px",
         fontFamily: "var(--font-space-grotesk), sans-serif",
       }}
     >
       {/* Left: text */}
       <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
-        <div style={{ color: "#fc4646", fontSize: "24px", fontWeight: 700, marginBottom: "16px" }}>
+        <div style={{ color: "#fc4646", fontSize: "20px", fontWeight: 700, marginBottom: "12px" }}>
           Starting in 1 minute
         </div>
         <div
           style={{
             color: "#000000",
-            fontSize: "48px",
+            fontSize: "40px",
             fontWeight: 700,
             lineHeight: 1.15,
             overflowWrap: "break-word",
@@ -76,11 +76,18 @@ export default function MeetingBuzz({ events }: MeetingBuzzProps) {
         </div>
       </div>
 
-      {/* Right: GIF */}
+      {/* Right: GIF — fixed square box so its width is predictable regardless
+          of the GIF's native aspect ratio. */}
       <img
         src="https://media.giphy.com/media/MFsSDodJHKcn1jbspn/giphy.gif"
         alt="Meeting alert"
-        style={{ height: "420px", borderRadius: "16px", objectFit: "cover", flexShrink: 0 }}
+        style={{
+          width: "300px",
+          height: "300px",
+          borderRadius: "16px",
+          objectFit: "cover",
+          flexShrink: 0,
+        }}
       />
     </div>
   );
