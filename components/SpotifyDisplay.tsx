@@ -27,7 +27,10 @@ export default function SpotifyDisplay({
         display: "flex",
         alignItems: "center",
         gap: "16px",
-        maxWidth: "283px",
+        boxSizing: "border-box",
+        // Fixed 287px content width to stay aligned with the 287px meeting
+        // cards; the card variant adds 16px padding each side -> 319px total.
+        width: card ? "319px" : "287px",
         ...(card
           ? { backgroundColor: "#e8e8e8", padding: "16px", borderRadius: "12px" }
           : {}),
