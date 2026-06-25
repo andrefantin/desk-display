@@ -48,6 +48,15 @@ export default function DisplayPage() {
     localStorage.setItem(TIME_FORMAT_KEY, next);
   }, []);
 
+  // Ensure the background video autoplays: React's `muted` prop doesn't
+  // reliably set the DOM property, so set it explicitly and call play().
+  const bgVideoRef = useCallback((el: HTMLVideoElement | null) => {
+    if (el) {
+      el.muted = true;
+      el.play().catch(() => {});
+    }
+  }, []);
+
   // The end time of the last meeting we've seen today, so we can run the
   // celebration for exactly one minute right after it ends — even though the
   // calendar API drops events once they're over.
@@ -214,6 +223,7 @@ export default function DisplayPage() {
 
   const offsetX = (window.innerWidth - DISPLAY_WIDTH * scale) / 2;
   const offsetY = (window.innerHeight - DISPLAY_HEIGHT * scale) / 2;
+  const hasMeetings = events.length > 0;
 
   return (
     <div
@@ -271,6 +281,29 @@ export default function DisplayPage() {
           <TimeFormatToggle value={timeFormat} onChange={toggleTimeFormat} />
         </div>
 
+        {/* No-meetings state: dithered video fills the bottom strip as a
+            background, blended with multiply. Rendered before the divider so
+            the divider and overlay content paint on top. */}
+        {!hasMeetings && (
+          <video
+            ref={bgVideoRef}
+            src="/no-meetings-bg.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{
+              position: "absolute",
+              top: "305px",
+              left: 0,
+              width: "960px",
+              height: "235px",
+              objectFit: "cover",
+              mixBlendMode: "multiply",
+            }}
+          />
+        )}
+
         {/* Full-width divider between the date row and the meetings section */}
         <div
           style={{
@@ -283,49 +316,80 @@ export default function DisplayPage() {
           }}
         />
 
-        {/* "Meetings today" label + now playing */}
-        <div
-          style={{
-            position: "absolute",
-            top: "335px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: `${CONTENT_WIDTH}px`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "var(--font-space-grotesk), sans-serif",
-              fontWeight: 500,
-              fontSize: "20px",
-              color: "#000000",
-            }}
-          >
-            Meetings today
-          </span>
-          <SpotifyDisplay track={track} accentColor={ACCENT_COLOR} />
-        </div>
+        {hasMeetings ? (
+          <>
+            {/* "Meetings today" label + now playing */}
+            <div
+              style={{
+                position: "absolute",
+                top: "335px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: `${CONTENT_WIDTH}px`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "var(--font-space-grotesk), sans-serif",
+                  fontWeight: 500,
+                  fontSize: "20px",
+                  color: "#000000",
+                }}
+              >
+                Meetings today
+              </span>
+              <SpotifyDisplay track={track} accentColor={ACCENT_COLOR} />
+            </div>
 
-        {/* Meeting cards */}
-        <div
-          style={{
-            position: "absolute",
-            top: "391px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: `${CONTENT_WIDTH}px`,
-          }}
-        >
-          <EventsList
-            events={events}
-            accentColor={ACCENT_COLOR}
-            timeFormat={timeFormat}
-            celebrating={celebrating}
-          />
-        </div>
+            {/* Meeting cards */}
+            <div
+              style={{
+                position: "absolute",
+                top: "391px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: `${CONTENT_WIDTH}px`,
+              }}
+            >
+              <EventsList
+                events={events}
+                accentColor={ACCENT_COLOR}
+                timeFormat={timeFormat}
+                celebrating={celebrating}
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Now playing, on a light card so it reads over the video */}
+            <div style={{ position: "absolute", top: "320px", left: "623px" }}>
+              <SpotifyDisplay track={track} accentColor={ACCENT_COLOR} card />
+            </div>
+
+            {/* Message shown after the celebration finishes */}
+            {!celebrating && (
+              <div
+                style={{
+                  position: "absolute",
+                  left: "37px",
+                  top: "468px",
+                  fontFamily: "var(--font-space-grotesk), sans-serif",
+                  fontWeight: 700,
+                  fontSize: "20px",
+                  lineHeight: 1.2,
+                  color: "#ffffff",
+                }}
+              >
+                You have no more
+                <br />
+                meetings today
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {celebrating && <MeetingsCelebration />}

@@ -5,11 +5,15 @@ import type { SpotifyTrack } from "@/lib/types";
 interface SpotifyDisplayProps {
   track: SpotifyTrack | null;
   accentColor: string;
+  // When true, render on a solid light-gray card (used over the video
+  // background in the no-meetings state).
+  card?: boolean;
 }
 
 export default function SpotifyDisplay({
   track,
   accentColor,
+  card = false,
 }: SpotifyDisplayProps) {
   if (!track) return null;
 
@@ -24,6 +28,9 @@ export default function SpotifyDisplay({
         alignItems: "center",
         gap: "16px",
         maxWidth: "283px",
+        ...(card
+          ? { backgroundColor: "#e8e8e8", padding: "16px", borderRadius: "12px" }
+          : {}),
       }}
     >
       {track.albumArt && (
