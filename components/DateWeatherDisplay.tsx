@@ -62,7 +62,7 @@ export default function DateWeatherDisplay({
         display: "flex",
         alignItems: "center",
         gap: "24px",
-        fontSize: "20px",
+        fontSize: "32px",
         color: "#000000",
       }}
     >
@@ -74,7 +74,7 @@ export default function DateWeatherDisplay({
           <img
             src={iconSrc}
             alt="weather"
-            style={{ width: "24px", height: "24px", objectFit: "contain" }}
+            style={{ width: "40px", height: "40px", objectFit: "contain" }}
           />
         )}
         <span>{tempDisplay}</span>
