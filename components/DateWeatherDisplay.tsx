@@ -61,7 +61,7 @@ export default function DateWeatherDisplay({
         fontWeight: 700,
         display: "flex",
         alignItems: "center",
-        gap: "24px",
+        gap: "40px",
         fontSize: "32px",
         color: "#000000",
       }}
